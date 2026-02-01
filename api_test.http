@@ -1,0 +1,123 @@
+### Test API### Auth Register
+POST http://more.test/api/v1/auth/register
+Content-Type: application/json
+Accept: application/json
+
+{
+    "name": "Admin User",
+    "email": "admin@more.test",
+    "password": "password",
+    "password_confirmation": "password"
+}
+
+### Auth Login
+POST http://more.test/api/v1/auth/login
+Content-Type: application/json
+Accept: application/json
+
+{
+    "email": "admin@more.test",
+    "password": "password"
+}
+
+### Auth Me (Ganti TOKEN_HERE)
+GET http://more.test/api/v1/auth/me
+Authorization: Bearer TOKEN_HERE
+Accept: application/json
+
+### Auth Logout (Ganti TOKEN_HERE)
+POST http://more.test/api/v1/auth/logout
+Authorization: Bearer TOKEN_HERE
+Accept: application/json
+
+### Upload Image (Protected - Add Token)
+# Note: Anda perlu file gambar fisik untuk mengetes ini via REST Client
+# Ganti path/to/image.jpg dengan path gambar di komputer Anda
+POST http://more.test/api/v1/upload
+Authorization: Bearer TOKEN_HERE
+Accept: application/json
+Content-Type: multipart/form-data; boundary=boundary
+
+--boundary
+Content-Disposition: form-data; name="image"; filename="test_image.jpg"
+Content-Type: image/jpeg
+
+< ./test_image.jpg
+--boundary--
+
+### Get All Products (Public)
+GET http://more.test/api/v1/products
+Accept: application/json
+
+### Create New Product (Protected - Add Token)
+POST http://more.test/api/v1/products
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer TOKEN_HERE
+
+{
+    "category_id": 1,
+    "name": "Kopi Tubruk Special",
+    "description": "Kopi tubruk dengan biji pilihan",
+    "price": 25000,
+    "stock": 100,
+    "min_stock": 5,
+    "is_available": true
+}
+
+### Update Product (Protected - Add Token)
+PUT http://more.test/api/v1/products/PASTE_UUID_HERE
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer TOKEN_HERE
+
+{
+    "name": "Kopi Tubruk Premium (Updated)",
+    "price": 30000
+}
+
+### Delete Product (Protected - Add Token)
+DELETE http://more.test/api/v1/products/PASTE_UUID_HERE
+Accept: application/json
+Authorization: Bearer TOKEN_HERE
+
+### Test API Connection
+GET http://more.test/api/v1/test
+Accept: application/json
+
+### Get All Categories
+GET http://more.test/api/v1/categories
+Accept: application/json
+
+### Get All Products
+GET http://more.test/api/v1/products
+Accept: application/json
+
+### Create New Product
+POST http://more.test/api/v1/products
+Content-Type: application/json
+Accept: application/json
+
+{
+    "category_id": 1,
+    "name": "Kopi Tubruk Special",
+    "description": "Kopi tubruk dengan biji pilihan",
+    "price": 25000,
+    "stock": 100,
+    "min_stock": 5,
+    "is_available": true
+}
+
+### Update Product (Ganti UUID dengan UUID asli dari response Create/Get)
+PUT http://more.test/api/v1/products/PASTE_UUID_HERE
+Content-Type: application/json
+Accept: application/json
+
+{
+    "name": "Kopi Tubruk Premium (Updated)",
+    "price": 30000
+}
+
+### Delete Product (Ganti UUID dengan UUID asli)
+DELETE http://more.test/api/v1/products/PASTE_UUID_HERE
+Accept: application/json

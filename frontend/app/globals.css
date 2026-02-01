@@ -1,0 +1,178 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  /* Premium Coffee Palette */
+  --primary: 32 100% 95%;     /* Soft Cream */
+  --primary-foreground: 28 80% 20%; /* Deep Coffee */
+  
+  --accent: 35 90% 50%;       /* Gold/Amber */
+  --accent-foreground: 0 0% 100%;
+
+  --background: 0 0% 100%;
+  --foreground: 0 0% 10%;
+
+  --muted: 0 0% 96%;
+  --muted-foreground: 0 0% 45%;
+
+  --card: 0 0% 100%;
+  --card-foreground: 0 0% 10%;
+
+  --border: 0 0% 90%;
+  --input: 0 0% 90%;
+  
+  --radius: 0.75rem;
+  
+  /* Glassmorphism */
+  --glass-bg: rgba(255, 255, 255, 0.7);
+  --glass-border: rgba(255, 255, 255, 0.5);
+  --glass-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.07);
+} 
+
+.dark {
+  --background: 0 0% 5%;
+  --foreground: 0 0% 98%;
+
+  --muted: 0 0% 10%;
+  --muted-foreground: 0 0% 60%;
+
+  --card: 0 0% 8%;
+  --card-foreground: 0 0% 98%;
+
+  --border: 0 0% 15%;
+  --input: 0 0% 15%;
+
+  --glass-bg: rgba(0, 0, 0, 0.7);
+  --glass-border: rgba(255, 255, 255, 0.1);
+}
+
+* {
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0;
+}
+
+body {
+  color: hsl(var(--foreground));
+  background: hsl(var(--background));
+  font-family: var(--font-geist-sans), Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Premium Utilities */
+.glass-panel {
+  background: var(--glass-bg);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--glass-shadow);
+}
+
+.btn-primary {
+  background: hsl(var(--primary-foreground));
+  color: hsl(var(--primary));
+  padding: 0.75rem 1.5rem;
+  border-radius: var(--radius);
+  font-weight: 500;
+  transition: all 0.2s ease;
+  border: none;
+  cursor: pointer;
+}
+
+.btn-primary:hover {
+  opacity: 0.9;
+  transform: translateY(-1px);
+}
+
+.layout-container {
+  display: flex;
+  min-height: 100vh;
+}
+
+/* Form Utilities */
+.input-field {
+  width: 100%;
+  padding: 0.75rem;
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  background: var(--card);
+  color: hsl(var(--foreground));
+  outline: none;
+  transition: all 0.2s;
+  font-family: inherit;
+}
+
+.input-field:focus {
+  border-color: hsl(var(--accent));
+  box-shadow: 0 0 0 2px hsl(var(--accent) / 0.2);
+}
+
+.label {
+  display: block;
+  font-size: 0.875rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  color: hsl(var(--foreground));
+}
+
+/* Print Utilities */
+@media print {
+  /* Hide sidebar and non-essential elements */
+  aside, nav, header, button, .layout-container > aside {
+    display: none !important;
+  }
+
+  /* Reset layout for print */
+  .layout-container {
+    display: block !important;
+    height: auto !important;
+    background: white !important;
+  }
+
+  main {
+    padding: 0 !important;
+    margin: 0 !important;
+    display: flex !important;
+    justify-content: center !important;
+    align-items: flex-start !important;
+  }
+
+  .glass-panel {
+    background: white !important;
+    border: none !important;
+    box-shadow: none !important;
+    backdrop-filter: none !important;
+    width: 80mm !important; /* Standard Thermal Paper Width */
+    max-width: 100% !important;
+    margin: 0 auto !important;
+    padding: 0 !important;
+  }
+
+  /* Receipt Typography */
+  body, * {
+    font-family: 'Courier New', Courier, monospace !important;
+    color: black !important;
+    font-size: 12px !important;
+  }
+
+  h1 {
+    font-size: 16px !important;
+    text-align: center !important;
+    margin-bottom: 1rem !important;
+  }
+
+  /* Force table compact */
+  table {
+    width: 100% !important;
+  }
+
+  th, td {
+    padding: 4px 0 !important;
+    border-bottom: 1px dashed #000 !important;
+  }
+  
+  tr {
+     border-bottom: none !important;
+  }
+}

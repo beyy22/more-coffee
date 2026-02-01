@@ -1,0 +1,9 @@
+{
+    "category_id": 1,
+    "name": "Kopi Test",
+    "description": "Deskripsi Test",
+    "price": 20000,
+    "stock": 10,
+    "min_stock": 1,
+    "is_available": true
+}
