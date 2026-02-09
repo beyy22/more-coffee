@@ -19,14 +19,25 @@ class ImageUploadController extends Controller
             $file = $request->file('image');
             $filename = Str::uuid() . '.' . $file->getClientOriginalExtension();
             
-            // Simpan ke storage 'public' folder 'uploads'
-             // Ensure "php artisan storage:link" is run
-            $path = $file->storeAs('uploads', $filename, 'public');
+            // Tentukan Disk (Local/Public atau Cloudinary dari env)
+            $disk = config('filesystems.default', 'public'); 
+
+            // Simpan file logic
+            // Jika Cloudinary, dia otomatis upload ke Cloud
+            $path = $file->storeAs('uploads', $filename, $disk);
+
+            // Generate URL
+            $url = Storage::disk($disk)->url($path);
+            
+            // Fix untuk Local Driver (tambahkan domain jika relative path)
+            if ($disk === 'public' && !Str::startsWith($url, ['http://', 'https://'])) {
+                $url = url($url);
+            }
 
             return response()->json([
                 'success' => true,
                 'message' => 'Image uploaded successfully',
-                'url' => url('storage/' . $path),
+                'url' => $url,
             ]);
         }
 
