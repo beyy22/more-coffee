@@ -10,19 +10,27 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   const pathname = usePathname();
   const router = useRouter();
 
-  const userRole = (user?.role || 'cashier').toLowerCase();
+  const userRoleStr = (user?.role || 'cashier').trim().toLowerCase();
+  const userRole = ['admin', 'cashier'].includes(userRoleStr) ? userRoleStr : 'admin'; // fallback to admin for unhandled roles like 'owner'
 
-  // Protect Admin Routes
+  // Protect Admin Routes & Handle Unauthenticated
   useEffect(() => {
-    if (!loading && userRole !== 'admin' && pathname) {
-      const adminRoutes = ['/products', '/categories', '/inventory', '/reports', '/settings'];
-      const isTryingToAccessAdminRoute = adminRoutes.some(route => pathname.includes(route));
+    if (!loading) {
+      if (!user) {
+        router.replace('/login');
+        return;
+      }
       
-      if (isTryingToAccessAdminRoute) {
-        router.replace('/dashboard/pos'); // Redirect to a safe page for cashier
+      if (userRole !== 'admin' && pathname) {
+        const adminRoutes = ['/products', '/categories', '/inventory', '/reports', '/settings'];
+        const isTryingToAccessAdminRoute = adminRoutes.some(route => pathname.includes(route));
+        
+        if (isTryingToAccessAdminRoute) {
+          router.replace('/dashboard/pos'); // Redirect to a safe page for cashier
+        }
       }
     }
-  }, [pathname, userRole, loading, router]);
+  }, [pathname, userRole, loading, router, user]);
 
   if (loading) {
     return <div className="flex h-screen items-center justify-center text-gray-400">Loading...</div>;
@@ -75,12 +83,12 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
         <div className="p-4 border-t border-gray-100 bg-gray-50/50">
           <div className="flex items-center gap-3 mb-3 px-2">
-            <div className="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center text-gray-500 font-bold text-xs">
-                {user?.name?.substring(0, 2).toUpperCase() || 'AD'}
+            <div className="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center text-gray-500 font-bold text-xs uppercase">
+                {user?.name ? user.name.substring(0, 2) : 'U'}
             </div>
             <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium text-gray-900 truncate">{user?.name}</p>
-                <p className="text-xs text-gray-500 truncate">{user?.email}</p>
+                <p className="text-sm font-medium text-gray-900 truncate">{user?.name || 'Guest'}</p>
+                <p className="text-xs text-gray-500 truncate">{user?.email || 'N/A'}</p>
             </div>
           </div>
           <button 
@@ -113,25 +121,25 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           </Link>
 
           {/* 2. POS */}
-          <Link href="/dashboard/pos" className={`flex flex-col items-center justify-center w-full h-full ${pathname.includes('/pos') ? 'text-orange-600' : 'text-gray-400'}`}>
+          <Link href="/dashboard/pos" className={`flex flex-col items-center justify-center w-full h-full ${pathname?.includes('/pos') ? 'text-orange-600' : 'text-gray-400'}`}>
             <span className="material-icons text-2xl">point_of_sale</span>
             <span className="text-[10px] font-medium mt-1">POS</span>
           </Link>
 
           {/* 3. Orders */}
-          <Link href="/dashboard/orders" className={`flex flex-col items-center justify-center w-full h-full ${pathname.includes('/orders') ? 'text-orange-600' : 'text-gray-400'}`}>
+          <Link href="/dashboard/orders" className={`flex flex-col items-center justify-center w-full h-full ${pathname?.includes('/orders') ? 'text-orange-600' : 'text-gray-400'}`}>
              <span className="material-icons text-2xl">receipt_long</span>
              <span className="text-[10px] font-medium mt-1">Orders</span>
           </Link>
 
           {/* 4. Products Group (Admin) or Kitchen (Cashier) */}
           {userRole === 'admin' ? (
-           <Link href="/dashboard/products" className={`flex flex-col items-center justify-center w-full h-full ${pathname.includes('/products') || pathname.includes('/categories') || pathname.includes('/inventory') ? 'text-orange-600' : 'text-gray-400'}`}>
+           <Link href="/dashboard/products" className={`flex flex-col items-center justify-center w-full h-full ${(pathname?.includes('/products') || pathname?.includes('/categories') || pathname?.includes('/inventory')) ? 'text-orange-600' : 'text-gray-400'}`}>
             <span className="material-icons text-2xl">inventory_2</span>
             <span className="text-[10px] font-medium mt-1">Products</span>
           </Link>
           ) : (
-            <Link href="/dashboard/kitchen" className={`flex flex-col items-center justify-center w-full h-full ${pathname.includes('/kitchen') ? 'text-orange-600' : 'text-gray-400'}`}>
+            <Link href="/dashboard/kitchen" className={`flex flex-col items-center justify-center w-full h-full ${pathname?.includes('/kitchen') ? 'text-orange-600' : 'text-gray-400'}`}>
               <span className="material-icons text-2xl">kitchen</span>
               <span className="text-[10px] font-medium mt-1">Kitchen</span>
             </Link>
