@@ -10,11 +10,16 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   const pathname = usePathname();
   const router = useRouter();
 
+  const [mounted, setMounted] = useState(false);
   const userRole = user?.role || 'cashier';
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   // Protect Admin Routes
   useEffect(() => {
-    if (!loading && userRole !== 'admin') {
+    if (mounted && !loading && userRole !== 'admin') {
       const adminRoutes = ['/products', '/categories', '/inventory', '/reports', '/settings'];
       const isTryingToAccessAdminRoute = adminRoutes.some(route => pathname.includes(route));
       
@@ -22,7 +27,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         router.replace('/dashboard/pos'); // Redirect to a safe page for cashier
       }
     }
-  }, [pathname, userRole, loading, router]);
+  }, [pathname, userRole, loading, router, mounted]);
 
   if (loading) {
     return <div className="flex h-screen items-center justify-center text-gray-400">Loading...</div>;
