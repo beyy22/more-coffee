@@ -47,27 +47,29 @@ Route::prefix('v1')->group(function () {
         // Upload Image
         Route::post('/upload', [\App\Http\Controllers\Api\V1\ImageUploadController::class, 'upload']);
 
-        // Category Management
-        // Route::apiResource('categories', CategoryController::class)->only(['store', 'update', 'destroy']);
-        Route::apiResource('categories', CategoryController::class);
-        
-        // Product Management (Create, Update, Delete)
-        Route::post('/products', [ProductController::class, 'store']);
-        Route::put('/products/{uuid}', [ProductController::class, 'update']);
-        Route::delete('/products/{uuid}', [ProductController::class, 'destroy']);
+        // Admin Only Routes
+        Route::middleware('role.admin')->group(function () {
+            // Category Management
+            Route::apiResource('categories', CategoryController::class);
+            
+            // Product Management (Create, Update, Delete)
+            Route::post('/products', [ProductController::class, 'store']);
+            Route::put('/products/{uuid}', [ProductController::class, 'update']);
+            Route::delete('/products/{uuid}', [ProductController::class, 'destroy']);
 
-        // POS / Orders
+            // Reports
+            Route::get('/reports/sales', [\App\Http\Controllers\Api\V1\ReportController::class, 'sales']);
+            Route::get('/reports/top-products', [\App\Http\Controllers\Api\V1\ReportController::class, 'topProducts']);
+            Route::get('/reports/export', [\App\Http\Controllers\Api\V1\ReportController::class, 'export']);
+
+            // Inventory
+            Route::get('/inventory/logs', [\App\Http\Controllers\Api\V1\InventoryController::class, 'index']);
+            Route::post('/inventory/add', [\App\Http\Controllers\Api\V1\InventoryController::class, 'store']);
+        });
+
+        // POS / Orders (Available to Cashier & Admin)
         Route::get('/orders', [\App\Http\Controllers\Api\V1\OrderController::class, 'index']);
         Route::put('/orders/{uuid}/status', [\App\Http\Controllers\Api\V1\OrderController::class, 'updateStatus']);
-
-        // Reports
-        Route::get('/reports/sales', [\App\Http\Controllers\Api\V1\ReportController::class, 'sales']);
-        Route::get('/reports/top-products', [\App\Http\Controllers\Api\V1\ReportController::class, 'topProducts']);
-        Route::get('/reports/export', [\App\Http\Controllers\Api\V1\ReportController::class, 'export']);
-
-        // Inventory
-        Route::get('/inventory/logs', [\App\Http\Controllers\Api\V1\InventoryController::class, 'index']);
-        Route::post('/inventory/add', [\App\Http\Controllers\Api\V1\InventoryController::class, 'store']);
     });
 
     // Public Order Creation (Guest/Self Order)

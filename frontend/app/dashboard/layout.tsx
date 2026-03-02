@@ -2,12 +2,27 @@
 
 import { useAuth } from '@/lib/auth-context';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
-import { useState } from 'react';
+import { usePathname, useRouter } from 'next/navigation';
+import { useState, useEffect } from 'react';
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const { user, logout, loading } = useAuth();
   const pathname = usePathname();
+  const router = useRouter();
+
+  const userRole = user?.role || 'cashier';
+
+  // Protect Admin Routes
+  useEffect(() => {
+    if (!loading && userRole !== 'admin') {
+      const adminRoutes = ['/products', '/categories', '/inventory', '/reports', '/settings'];
+      const isTryingToAccessAdminRoute = adminRoutes.some(route => pathname.includes(route));
+      
+      if (isTryingToAccessAdminRoute) {
+        router.replace('/dashboard/pos'); // Redirect to a safe page for cashier
+      }
+    }
+  }, [pathname, userRole, loading, router]);
 
   if (loading) {
     return <div className="flex h-screen items-center justify-center text-gray-400">Loading...</div>;
@@ -15,16 +30,16 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
   // Simple sidebar navigation items
   const navItems = [
-    { name: 'Dashboard', icon: 'dashboard', href: '/dashboard' },
-    { name: 'POS', icon: 'point_of_sale', href: '/dashboard/pos' },
-    { name: 'Orders', icon: 'receipt_long', href: '/dashboard/orders' },
-    { name: 'Products', icon: 'inventory_2', href: '/dashboard/products' },
-    { name: 'Categories', icon: 'category', href: '/dashboard/categories' },
-    { name: 'Inventory', icon: 'warehouse', href: '/dashboard/inventory' },
-    { name: 'Reports', icon: 'bar_chart', href: '/dashboard/reports' },
-    { name: 'Kitchen', icon: 'kitchen', href: '/dashboard/kitchen' },
-    { name: 'Settings', icon: 'settings', href: '/dashboard/settings' },
-  ];
+    { name: 'Dashboard', icon: 'dashboard', href: '/dashboard', roles: ['admin', 'cashier'] },
+    { name: 'POS', icon: 'point_of_sale', href: '/dashboard/pos', roles: ['admin', 'cashier'] },
+    { name: 'Orders', icon: 'receipt_long', href: '/dashboard/orders', roles: ['admin', 'cashier'] },
+    { name: 'Products', icon: 'inventory_2', href: '/dashboard/products', roles: ['admin'] },
+    { name: 'Categories', icon: 'category', href: '/dashboard/categories', roles: ['admin'] },
+    { name: 'Inventory', icon: 'warehouse', href: '/dashboard/inventory', roles: ['admin'] },
+    { name: 'Reports', icon: 'bar_chart', href: '/dashboard/reports', roles: ['admin'] },
+    { name: 'Kitchen', icon: 'kitchen', href: '/dashboard/kitchen', roles: ['admin', 'cashier'] },
+    { name: 'Settings', icon: 'settings', href: '/dashboard/settings', roles: ['admin'] },
+  ].filter(item => item.roles.includes(userRole));
 
   // State for mobile "More" menu
   const [showMobileMore, setShowMobileMore] = useState(false);
@@ -110,11 +125,18 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
              <span className="text-[10px] font-medium mt-1">Orders</span>
           </Link>
 
-          {/* 4. Products Group */}
+          {/* 4. Products Group (Admin) or Kitchen (Cashier) */}
+          {userRole === 'admin' ? (
            <Link href="/dashboard/products" className={`flex flex-col items-center justify-center w-full h-full ${pathname.includes('/products') || pathname.includes('/categories') || pathname.includes('/inventory') ? 'text-orange-600' : 'text-gray-400'}`}>
             <span className="material-icons text-2xl">inventory_2</span>
             <span className="text-[10px] font-medium mt-1">Products</span>
           </Link>
+          ) : (
+            <Link href="/dashboard/kitchen" className={`flex flex-col items-center justify-center w-full h-full ${pathname.includes('/kitchen') ? 'text-orange-600' : 'text-gray-400'}`}>
+              <span className="material-icons text-2xl">kitchen</span>
+              <span className="text-[10px] font-medium mt-1">Kitchen</span>
+            </Link>
+          )}
 
           {/* 5. More (Toggle) */}
           <button 
@@ -130,26 +152,30 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         {showMobileMore && (
            <div className="md:hidden fixed bottom-16 right-0 left-0 bg-white border-t border-gray-200 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.1)] z-40 rounded-t-2xl p-4 animate-slide-up">
               <div className="grid grid-cols-4 gap-4">
-                  <Link href="/dashboard/reports" className="flex flex-col items-center p-3 rounded-lg bg-gray-50 active:bg-gray-100" onClick={() => setShowMobileMore(false)}>
-                    <span className="material-icons text-purple-500 mb-2">bar_chart</span>
-                    <span className="text-xs font-medium text-gray-700">Laporan</span>
-                  </Link>
-                  <Link href="/dashboard/kitchen" className="flex flex-col items-center p-3 rounded-lg bg-gray-50 active:bg-gray-100" onClick={() => setShowMobileMore(false)}>
-                    <span className="material-icons text-red-500 mb-2">kitchen</span>
-                    <span className="text-xs font-medium text-gray-700">Dapur</span>
-                  </Link>
-                  <Link href="/dashboard/categories" className="flex flex-col items-center p-3 rounded-lg bg-gray-50 active:bg-gray-100" onClick={() => setShowMobileMore(false)}>
-                    <span className="material-icons text-blue-500 mb-2">category</span>
-                    <span className="text-xs font-medium text-gray-700">Kategori</span>
-                  </Link>
-                  <Link href="/dashboard/inventory" className="flex flex-col items-center p-3 rounded-lg bg-gray-50 active:bg-gray-100" onClick={() => setShowMobileMore(false)}>
-                    <span className="material-icons text-green-500 mb-2">warehouse</span>
-                    <span className="text-xs font-medium text-gray-700">Stok</span>
-                  </Link>
-                  <Link href="/dashboard/settings" className="flex flex-col items-center p-3 rounded-lg bg-gray-50 active:bg-gray-100" onClick={() => setShowMobileMore(false)}>
-                    <span className="material-icons text-gray-500 mb-2">settings</span>
-                    <span className="text-xs font-medium text-gray-700">Settings</span>
-                  </Link>
+                  {userRole === 'admin' && (
+                    <>
+                      <Link href="/dashboard/reports" className="flex flex-col items-center p-3 rounded-lg bg-gray-50 active:bg-gray-100" onClick={() => setShowMobileMore(false)}>
+                        <span className="material-icons text-purple-500 mb-2">bar_chart</span>
+                        <span className="text-xs font-medium text-gray-700">Laporan</span>
+                      </Link>
+                      <Link href="/dashboard/kitchen" className="flex flex-col items-center p-3 rounded-lg bg-gray-50 active:bg-gray-100" onClick={() => setShowMobileMore(false)}>
+                        <span className="material-icons text-red-500 mb-2">kitchen</span>
+                        <span className="text-xs font-medium text-gray-700">Dapur</span>
+                      </Link>
+                      <Link href="/dashboard/categories" className="flex flex-col items-center p-3 rounded-lg bg-gray-50 active:bg-gray-100" onClick={() => setShowMobileMore(false)}>
+                        <span className="material-icons text-blue-500 mb-2">category</span>
+                        <span className="text-xs font-medium text-gray-700">Kategori</span>
+                      </Link>
+                      <Link href="/dashboard/inventory" className="flex flex-col items-center p-3 rounded-lg bg-gray-50 active:bg-gray-100" onClick={() => setShowMobileMore(false)}>
+                        <span className="material-icons text-green-500 mb-2">warehouse</span>
+                        <span className="text-xs font-medium text-gray-700">Stok</span>
+                      </Link>
+                      <Link href="/dashboard/settings" className="flex flex-col items-center p-3 rounded-lg bg-gray-50 active:bg-gray-100" onClick={() => setShowMobileMore(false)}>
+                        <span className="material-icons text-gray-500 mb-2">settings</span>
+                        <span className="text-xs font-medium text-gray-700">Settings</span>
+                      </Link>
+                    </>
+                  )}
                    <button onClick={logout} className="flex flex-col items-center p-3 rounded-lg bg-red-50 active:bg-red-100 col-span-1">
                     <span className="material-icons text-red-600 mb-2">logout</span>
                     <span className="text-xs font-medium text-red-700">Keluar</span>
