@@ -45,9 +45,10 @@ export default function POSPage() {
   const [showQRModal, setShowQRModal] = useState(false);
 
   const [showMobileCart, setShowMobileCart] = useState(false);
-  const [gridColumns, setGridColumns] = useState(4); // Default 4 columns on desktop
+  const [gridColumns, setGridColumns] = useState(0); // 0 means not hydrated yet
 
   useEffect(() => {
+    setGridColumns(window.innerWidth >= 1024 ? 4 : 2);
     fetchProducts();
   }, []);
 
@@ -197,15 +198,15 @@ export default function POSPage() {
                 </div>
             </div>
             
-            {/* Desktop Zoom Control */}
-            <div className="hidden lg:flex items-center gap-2 bg-white px-4 py-2 rounded-xl border border-gray-200 shadow-sm min-w-48">
+            {/* Grid Zoom Control */}
+            <div className="flex items-center gap-2 bg-white px-4 py-2 rounded-xl border border-gray-200 shadow-sm min-w-48">
                 <span className="material-icons text-gray-400 text-sm" style={{ transform: 'scale(0.8)' }}>grid_view</span>
                 <input 
                     type="range" 
-                    min="3" 
-                    max="6" 
+                    min={typeof window !== 'undefined' && window.innerWidth >= 1024 ? "3" : "1"} 
+                    max={typeof window !== 'undefined' && window.innerWidth >= 1024 ? "6" : "4"} 
                     step="1"
-                    value={gridColumns}
+                    value={gridColumns || 2}
                     onChange={(e) => setGridColumns(parseInt(e.target.value))}
                     className="flex-1 accent-black h-1 bg-gray-200 rounded-lg appearance-none cursor-pointer"
                 />
@@ -216,9 +217,7 @@ export default function POSPage() {
         <div 
             className="grid gap-4 p-1 lg:overflow-y-auto"
             style={{ 
-                gridTemplateColumns: typeof window !== 'undefined' && window.innerWidth >= 1024 
-                    ? `repeat(${gridColumns}, minmax(0, 1fr))` 
-                    : 'repeat(2, minmax(0, 1fr))'
+                gridTemplateColumns: gridColumns > 0 ? `repeat(${gridColumns}, minmax(0, 1fr))` : 'repeat(2, minmax(0, 1fr))'
             }}
         >
             {filteredProducts.map(product => (
