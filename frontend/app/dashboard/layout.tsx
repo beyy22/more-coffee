@@ -10,7 +10,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   const pathname = usePathname();
   const router = useRouter();
 
-  const userRole = user?.role || 'cashier';
+  const userRole = (user?.role || 'cashier').toLowerCase();
 
   // Protect Admin Routes
   useEffect(() => {

@@ -113,8 +113,8 @@ export default function DashboardPage() {
                     </thead>
                     <tbody className="divide-y divide-gray-100">
                     {stats.recent_orders.map((order) => (
-                        <tr key={order.uuid} className="hover:bg-gray-50 transition-colors">
-                            <td className="px-6 py-4 text-sm font-mono text-gray-600">#{order.uuid.substring(0, 8)}</td>
+                        <tr key={order.id || order.uuid || Math.random()} className="hover:bg-gray-50 transition-colors">
+                            <td className="px-6 py-4 text-sm font-mono text-gray-600">#{order.uuid ? order.uuid.substring(0, 8) : order.id}</td>
                             <td className="px-6 py-4 text-sm font-medium text-gray-900">{order.customer_name || 'Guest'}</td>
                             <td className="px-6 py-4 text-sm text-gray-500">
                                 {new Date(order.created_at).toLocaleDateString('id-ID', {
