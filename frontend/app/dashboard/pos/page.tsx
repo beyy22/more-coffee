@@ -179,7 +179,7 @@ export default function POSPage() {
   if (loading) return <div className="flex h-full items-center justify-center text-gray-400">Loading POS...</div>;
 
   return (
-    <div className="flex flex-col lg:flex-row gap-6 h-auto lg:h-[calc(100vh-6rem)] relative pb-24 lg:pb-0">
+    <div className="flex flex-col lg:flex-row gap-6 h-auto lg:h-[calc(100vh-6rem)] relative pb-40 lg:pb-0">
       {/* Left: Product Grid */}
       <div className="w-full lg:flex-1 flex flex-col min-h-0">
         <div className="mb-4 sticky top-0 z-10 lg:static">
@@ -227,8 +227,8 @@ export default function POSPage() {
 
       {/* Right: Cart Summary (Desktop: Sidebar, Mobile: Bottom Sheet) */}
       <div className={`
-          fixed inset-x-0 bottom-0 z-40 bg-white border-t border-gray-200 shadow-[0_-5px_20px_-5px_rgba(0,0,0,0.1)] transition-transform duration-300 ease-in-out lg:transform-none lg:static lg:w-[380px] lg:border lg:rounded-2xl lg:shadow-sm lg:h-full lg:flex lg:flex-col lg:z-0
-          ${showMobileCart ? 'translate-y-0 h-[85vh] rounded-t-3xl' : 'translate-y-0 h-auto'}
+          fixed inset-x-0 bottom-16 md:bottom-0 z-40 bg-white border-t border-gray-200 shadow-[0_-5px_20px_-5px_rgba(0,0,0,0.1)] transition-transform duration-300 ease-in-out lg:transform-none lg:static lg:w-[380px] lg:border lg:rounded-2xl lg:shadow-sm lg:h-full lg:flex lg:flex-col lg:z-0
+          ${showMobileCart ? 'translate-y-0 h-[85vh] rounded-t-3xl pb-16' : 'translate-y-0 h-auto'}
       `}>
         {/* Mobile Drag Handle / Header */}
         <div 
