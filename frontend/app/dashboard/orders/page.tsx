@@ -22,6 +22,7 @@ export default function OrderListPage() {
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
   const [filterType, setFilterType] = useState<'all' | 'dine_in' | 'take_away'>('all');
+  const [search, setSearch] = useState('');
 
   useEffect(() => {
     fetchOrders();
@@ -43,29 +44,46 @@ export default function OrderListPage() {
 
   if (loading) return <div className="flex h-full items-center justify-center text-gray-400">Loading orders...</div>;
 
+  const filteredOrders = orders.filter(order => 
+    (order.customer_name || 'Guest').toLowerCase().includes(search.toLowerCase())
+  );
+
   return (
     <div className="space-y-6">
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
         <div>
            <h1 className="text-2xl font-bold tracking-tight text-gray-900">Order History</h1>
            <p className="text-sm text-gray-500 mt-1">Manage and view all customer orders</p>
         </div>
-        
-        {/* Filter Tabs */}
-        <div className="flex p-1 bg-gray-100 rounded-xl self-start sm:self-auto">
-           {['all', 'dine_in', 'take_away'].map((type) => (
-              <button
-                key={type}
-                onClick={() => setFilterType(type as any)}
-                className={`px-4 py-2 text-sm font-medium rounded-lg transition-all capitalize ${
-                    filterType === type 
-                    ? 'bg-white text-gray-900 shadow-sm' 
-                    : 'text-gray-500 hover:text-gray-700 hover:bg-gray-200/50'
-                }`}
-              >
-                {type.replace('_', ' ')}
-              </button>
-           ))}
+        <div className="flex flex-col sm:flex-row gap-3">
+          {/* Search Bar */}
+          <div className="relative">
+            <span className="material-icons absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm">search</span>
+            <input 
+              type="text" 
+              placeholder="Search customer..." 
+              className="w-full sm:w-64 pl-10 pr-4 py-2 bg-white border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent transition-all shadow-sm text-sm"
+              value={search}
+              onChange={e => setSearch(e.target.value)}
+            />
+          </div>
+          
+          {/* Filter Tabs */}
+          <div className="flex p-1 bg-gray-100 rounded-xl self-start sm:self-auto">
+             {['all', 'dine_in', 'take_away'].map((type) => (
+                <button
+                  key={type}
+                  onClick={() => setFilterType(type as any)}
+                  className={`px-4 py-2 text-sm font-medium rounded-lg transition-all capitalize ${
+                      filterType === type 
+                      ? 'bg-white text-gray-900 shadow-sm' 
+                      : 'text-gray-500 hover:text-gray-700 hover:bg-gray-200/50'
+                  }`}
+                >
+                  {type.replace('_', ' ')}
+                </button>
+             ))}
+          </div>
         </div>
       </div>
 
@@ -84,7 +102,7 @@ export default function OrderListPage() {
                 </tr>
             </thead>
             <tbody className="divide-y divide-gray-100">
-                {orders.length === 0 ? (
+                {filteredOrders.length === 0 ? (
                     <tr>
                         <td colSpan={7} className="px-6 py-12 text-center text-gray-400">
                             <span className="material-icons text-4xl mb-2 block text-gray-300">receipt_long</span>
@@ -92,7 +110,7 @@ export default function OrderListPage() {
                         </td>
                     </tr>
                 ) : (
-                    orders.map(order => (
+                    filteredOrders.map(order => (
                     <tr key={order.uuid} className="hover:bg-gray-50 transition-colors">
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                             <div className="font-medium text-gray-900">
