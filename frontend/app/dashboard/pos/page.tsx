@@ -45,6 +45,7 @@ export default function POSPage() {
   const [showQRModal, setShowQRModal] = useState(false);
 
   const [showMobileCart, setShowMobileCart] = useState(false);
+  const [gridColumns, setGridColumns] = useState(4); // Default 4 columns on desktop
 
   useEffect(() => {
     fetchProducts();
@@ -182,19 +183,44 @@ export default function POSPage() {
     <div className="flex flex-col lg:flex-row gap-6 h-auto lg:h-[calc(100vh-6rem)] relative pb-40 lg:pb-0">
       {/* Left: Product Grid */}
       <div className="w-full lg:flex-1 flex flex-col min-h-0">
-        <div className="mb-4 sticky top-0 z-10 lg:static">
-             <div className="bg-gray-100/90 backdrop-blur-md p-2 -m-2 mb-0 rounded-b-xl border border-gray-200 lg:bg-transparent lg:p-0 lg:m-0 lg:backdrop-blur-none lg:border-none lg:rounded-none">
+        <div className="mb-4 sticky top-0 z-10 lg:static flex flex-col sm:flex-row gap-3">
+             <div className="bg-gray-100/90 backdrop-blur-md p-2 -m-2 mb-0 rounded-b-xl border border-gray-200 lg:bg-transparent lg:p-0 lg:m-0 lg:backdrop-blur-none lg:border-none lg:rounded-none flex-1">
+                <div className="relative">
+                  <span className="material-icons absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm">search</span>
+                  <input 
+                      type="text" 
+                      placeholder="Search products..." 
+                      className="w-full pl-10 pr-4 py-3 bg-white border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent transition-all shadow-sm"
+                      value={search}
+                      onChange={e => setSearch(e.target.value)}
+                  />
+                </div>
+            </div>
+            
+            {/* Desktop Zoom Control */}
+            <div className="hidden lg:flex items-center gap-2 bg-white px-4 py-2 rounded-xl border border-gray-200 shadow-sm min-w-48">
+                <span className="material-icons text-gray-400 text-sm" style={{ transform: 'scale(0.8)' }}>grid_view</span>
                 <input 
-                    type="text" 
-                    placeholder="Search products..." 
-                    className="w-full p-3 bg-white border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent transition-all shadow-sm"
-                    value={search}
-                    onChange={e => setSearch(e.target.value)}
+                    type="range" 
+                    min="3" 
+                    max="6" 
+                    step="1"
+                    value={gridColumns}
+                    onChange={(e) => setGridColumns(parseInt(e.target.value))}
+                    className="flex-1 accent-black h-1 bg-gray-200 rounded-lg appearance-none cursor-pointer"
                 />
+                <span className="material-icons text-gray-400 text-sm" style={{ transform: 'scale(1.2)' }}>grid_view</span>
             </div>
         </div>
         
-        <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-4 p-1 lg:overflow-y-auto">
+        <div 
+            className="grid gap-4 p-1 lg:overflow-y-auto"
+            style={{ 
+                gridTemplateColumns: typeof window !== 'undefined' && window.innerWidth >= 1024 
+                    ? `repeat(${gridColumns}, minmax(0, 1fr))` 
+                    : 'repeat(2, minmax(0, 1fr))'
+            }}
+        >
             {filteredProducts.map(product => (
                 <div 
                     key={product.uuid} 
