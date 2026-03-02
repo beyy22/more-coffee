@@ -10,16 +10,11 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   const pathname = usePathname();
   const router = useRouter();
 
-  const [mounted, setMounted] = useState(false);
   const userRole = user?.role || 'cashier';
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
 
   // Protect Admin Routes
   useEffect(() => {
-    if (mounted && !loading && userRole !== 'admin') {
+    if (!loading && userRole !== 'admin' && pathname) {
       const adminRoutes = ['/products', '/categories', '/inventory', '/reports', '/settings'];
       const isTryingToAccessAdminRoute = adminRoutes.some(route => pathname.includes(route));
       
@@ -27,13 +22,12 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         router.replace('/dashboard/pos'); // Redirect to a safe page for cashier
       }
     }
-  }, [pathname, userRole, loading, router, mounted]);
+  }, [pathname, userRole, loading, router]);
 
   if (loading) {
     return <div className="flex h-screen items-center justify-center text-gray-400">Loading...</div>;
   }
 
-  // Simple sidebar navigation items
   const navItems = [
     { name: 'Dashboard', icon: 'dashboard', href: '/dashboard', roles: ['admin', 'cashier'] },
     { name: 'POS', icon: 'point_of_sale', href: '/dashboard/pos', roles: ['admin', 'cashier'] },
