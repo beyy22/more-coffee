@@ -15,7 +15,13 @@ class EnsureAdminRole
      */
     public function handle(Request $request, Closure $next): Response
     {
-        if ($request->user() && strtolower(trim($request->user()->role)) !== 'admin') {
+        $user = $request->user();
+        \Illuminate\Support\Facades\Log::info('EnsureAdminRole Triggered', [
+            'user_id' => $user ? $user->id : null,
+            'user_role' => $user ? $user->role : 'NO_ROLE_FOUND'
+        ]);
+
+        if ($user && strtolower(trim($user->role)) !== 'admin') {
             return response()->json([
                 'success' => false,
                 'message' => 'Forbidden. Admin access required.'
