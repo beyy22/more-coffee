@@ -17,6 +17,7 @@ interface Category {
 export default function CategoriesPage() {
   const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
   const fetchCategories = async () => {
     try {
@@ -26,8 +27,9 @@ export default function CategoriesPage() {
         ? response.data 
         : (response.data?.data || []);
       setCategories(list);
-    } catch (error) {
+    } catch (error: any) {
       console.error('Failed to fetch categories', error);
+      setErrorMsg(error.message || 'Unknown error occurred while fetching categories');
     } finally {
       setLoading(false);
     }
@@ -67,7 +69,13 @@ export default function CategoriesPage() {
       </div>
 
       <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-        {categories.length === 0 ? (
+        {errorMsg ? (
+            <div className="p-12 text-center text-red-500 flex flex-col items-center">
+                <span className="material-icons text-4xl mb-3">error_outline</span>
+                <p className="font-bold">Error loading categories</p>
+                <p className="text-sm mt-1">{errorMsg}</p>
+            </div>
+        ) : categories.length === 0 ? (
             <div className="p-12 text-center text-gray-400 flex flex-col items-center">
                 <span className="material-icons text-4xl mb-3 text-gray-300">category</span>
                 <p>No categories found.</p>
