@@ -19,9 +19,9 @@ return [
 
     'allowed_methods' => ['*'],
 
-    'allowed_origins' => ['http://localhost:3000', 'http://more.test', 'https://more-coffee-two.vercel.app', 'https://more-coffee-*.vercel.app'],
+    'allowed_origins' => ['http://localhost:3000', 'http://more.test', 'https://more-coffee-two.vercel.app'],
 
-    'allowed_origins_patterns' => [],
+    'allowed_origins_patterns' => ['#^https://more-coffee-.*\.vercel\.app$#'],
 
     'allowed_headers' => ['*'],
 

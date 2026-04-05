@@ -22,9 +22,10 @@ class EnsureAdminRole
         ]);
 
         if ($user && strtolower(trim($user->role)) !== 'admin') {
+            $roleVal = $user->role === null ? 'NULL' : ($user->role === '' ? 'EMPTY_STRING' : $user->role);
             return response()->json([
                 'success' => false,
-                'message' => 'Forbidden. Admin access required.'
+                'message' => 'Forbidden. Admin access required. (Role is: ' . $roleVal . ')'
             ], 403);
         }
 
